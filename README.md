@@ -7,4 +7,6 @@ systems! What the heck does that mean?
 
 Consider nature, for instance:
 
+![The Wave](https://vincenttoups.github.io/ux-iron-yard/the-wave.jpg)
+
 
