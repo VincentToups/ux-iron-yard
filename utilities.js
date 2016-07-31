@@ -49,5 +49,19 @@ function parseCaRules(s){
     return rules;
 }
 
+function interpolateColors(c1,c2,n){
+    var out = [];
+    c1 = tinycolor(c1).toRgb();
+    c2 = tinycolor(c2).toRgb();
+    for(var i = 0; i < n; i ++){
+	out.push(tinycolor({
+	    r:Math.floor((c1.r*(1-i/(n-1))+c2.r*(i/(n-1)))/1),
+	    g:Math.floor((c1.g*(1-i/(n-1))+c2.g*(i/(n-1)))/1),
+	    b:Math.floor((c1.b*(1-i/(n-1))+c2.b*(i/(n-1)))/1)
+	}).toRgbString());
+    }
+    return out;    
+}
+
 
 
