@@ -1,0 +1,95 @@
+<h1 id="lets-program-in-javascript">Let's program in Javascript!</h1>
+<p>Javascript is a programming language which runs inside almost every web browser. It was originally intended as a way to allow web site authors to add interactive elements to web sites and that use case has flourished: the web browser has become, essentially, the user interface for all application development.</p>
+<h1 id="programming-language">Programming Language?</h1>
+<p>Programming languages are tools which allow the programmer to describe some computation. A good way to start thinking about programming is that the programmer writes a series of steps which the computer then carries out.</p>
+<p>For instance:</p>
+<pre><code>var r = 10;
+var theta = Math.PI/2;
+var x = r*Math.cos(theta);
+var y = r*Math.sin(theta);
+console.log(&quot;The position of a point at r = 10, theta = pi/2 is &quot;, x,y);</code></pre>
+<p>In order to understand programs we have to learn to do what the browser does: we need t learn to evaluate expressions sequentially until we have a result. In the above example we have five lines which we execute sequentialy. The first four introduce &quot;variables&quot; which are names for values, the final line prints out the values bound in the variables x and y, along with a &quot;string,&quot; which is how we describe a lump of text.</p>
+<h1 id="rules-for-evaluation">Rules for Evaluation</h1>
+<p>(Hint: you can right click on your browser, select &quot;inspect element&quot; and then click the &quot;Console&quot; tab to open an interpreter for Javascript: you can run little pieces of code there).</p>
+<p>The first and most important rule is: break your program up into pieces and evaluate the pieces first. Consider the program:</p>
+<pre><code>var x = 10;
+var y = 11;
+console.log(x+y);</code></pre>
+<p>We can break it up into pieces, first line by line. So the first line is:</p>
+<pre><code>var x = 10;</code></pre>
+<p>And this can be broken up further:</p>
+<pre><code>|var x = |10||</code></pre>
+<p>Here I am breaking up the expression into pieces with <code>|</code>. Now we evaluate the program starting with the inner most pieces:</p>
+<p>Here is the confusing part: we have to distinguish <code>10</code> and &quot;10&quot;. That is, the program denoting the value <code>10</code>, which is a piece of text, and the value of that program after evaluation, which is a representation of the number 10. There are like a million confusing things about that sentence, so lets stop here and really think about it.</p>
+<p>The key thing is that computers represent different things in different ways. Numbers in particular can be represented in such a way that it is very efficient to calculate things with them. So when you type <code>10</code> into your Javascript interpreter, even though it starts out as the characters <code>1</code> and then <code>0</code>, the engine <em>evaluates</em> that textual representation into that efficient numerical representation so that you can quickly calculate things like <code>Math.sqrt(10)</code>. Whenever we type something which evaluates to a representation of the thing itself, we call that thing an <em>literal</em> value, as in &quot;<code>10</code> is literally the value 10&quot;.</p>
+<p>So we break up the expression:</p>
+<pre><code>|var x = |10||</code></pre>
+<p>And we start with the inner-most expression <code>10</code> which we know the machine will turn int a number. Then Javascript <em>binds</em> that number to the <em>name</em> or <em>variable</em> <code>x</code>.</p>
+<p>What does <code>binding</code> mean? It means that if Javascript encounters the symbol <code>x</code> at a future point, it will look up the value in a big dictionary somewhere and return <code>10</code>. Variable binding is really important since almost every expression involves variables. The rules are relatively simple:</p>
+<p>If you see a variable, look in the enclosing contexts until you find its value. The largest context is called the <em>top level</em> and it is the context we interact with at the interpreter. But we can introduce new contexts in Javascript by introducing functions.</p>
+<p>But first, the literals:</p>
+<pre><code>var literalNumber = 10;
+var literalString = &quot;Hello&quot;;
+var literalArray = [10,11,12,&quot;Doggo&quot;];
+var literalFunction = function(x,y,z){
+    // in here we have a new context.
+    return x+y+z;
+}</code></pre>
+<p>Note that <code>//</code> indicates a comment. Javascript ignores anything on a line after a <code>//</code>.</p>
+<h1 id="functions">Functions</h1>
+<p>Ok - what the heck is a function? It is just a re-usable block of code which takes values in at one end and returns a value at the other. Remember our code to calculate the x,y position of a point located at a particular radius and angle?</p>
+<p>Here it was:</p>
+<pre><code>var r = 10;
+var theta = Math.PI/2;
+var x = r*Math.cos(theta);
+var y = r*Math.sin(theta);
+console.log(&quot;The position of a point at r = 10, theta = pi/2 is &quot;, x,y);</code></pre>
+<p>We want to write a function to return the x,y coordinates given r and theta.</p>
+<pre><code>function toXY(r,theta){
+    var x = r*Math.cos(theta);
+    var y = r*Math.sin(theta);
+    return [x,y]; // A literal array with variable elements.
+}
+
+&gt; toXY(1,Math.PI/2)
+[ 6.123233995736766e-17, 1 ]
+&gt; toXY(1,Math.PI/4)
+[ 0.7071067811865476, 0.7071067811865475 ]
+&gt; </code></pre>
+<p>Note that there is a difference between <code>toXY</code> and <code>toXY(1,0)</code>. The first means &quot;look up the value of the variable <code>toXY</code>, which happens to be a function, but don't <em>call</em> the function.&quot; When we put parentheses after a function name we are telling Javascript &quot;look up the value of the variable <code>toXY</code> and then make sure it is a function and then <em>call it</em>.&quot; The effect of calling the function is to bind the values to the arguments, evaluate the body until a <code>return</code> statement, and the return that value to the calling context. Remember: <em>mentioning</em> a function results in a function as a value. Calling a function results in whatever the function <em>calculates</em>.</p>
+<h1 id="control-flow">Control Flow</h1>
+<p>Computer programs gotta do different things based on input. For instance, if you type a date in correctly, the browser needs to send off to the server to make an appointment. But if you type it in wrong, it needs to let you know that it should be fixed. This is called control flow:</p>
+<p>The most important sort of control flow is the <code>if</code> statement.</p>
+<pre><code>function demonstrateIf(value){
+    if(value===true){
+        return &quot;I got true.&quot;;
+    } else {
+        return &quot;I got false.&quot;;
+    }
+}
+
+demonstrateIf(true) -&gt; &quot;I got true.&quot;
+demonstrateIf(false) -&gt; &quot;I got false.&quot;
+demonstrateIf(0===1) -&gt; &quot;I got false.&quot;</code></pre>
+<p>Here is how we break up an if statement:</p>
+<pre><code>|if(|value===true|){
+    |return &quot;I got true.&quot;|;
+} else {
+    |return &quot;I got false.&quot;|;
+}|</code></pre>
+<p>That is, to evaluate an if statement, we first evaluate the thing in the parenthesis after <code>if</code>. If that value is <code>true</code> or &quot;true like&quot; (anything other than false or zero or a few other things), we evaluate <em>only</em> the first clause. Otherwise we evaluate <em>only</em> the second clause. That is the critical idea: only one leg of an &quot;if&quot; statement is ever evaluated. That is how it lets us do control flow.</p>
+<p>Finally, in our whirlwind tour: <code>for</code> loops. The &quot;for&quot; loop lets us indicate a desire to repeat things:</p>
+<pre><code>for(var i = 0; i &lt; 10; i = i + 1){
+    console.log(&quot;i is:&quot;, i);
+}
+
+-&gt; i is 0
+   i is 1
+   i is 2
+   i is 3
+   </code></pre>
+<p>We break it up this way:</p>
+<pre><code>|for(|var i = 0|; |i &lt; 10|; |i = i + 1|){
+    |console.log(&quot;i is:&quot;, i);|
+}|</code></pre>
+<p>The first clause of the <code>for</code> part of the statement is evaluated once and initializes some state, in this case a variable <code>i</code>. The second clause is a condition which is tested each time the loop executes. If it is true, the loop body is executed. After that, the last clause is executed. Generally that clause needs to update the state somehow, so that the middle clause eventually is false. Otherwise our loop would continue forever.</p>

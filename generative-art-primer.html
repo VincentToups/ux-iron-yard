@@ -1,0 +1,218 @@
+<h1 id="lesson-1---1d-cellular-automata">Lesson 1 - 1D Cellular Automata</h1>
+<p>Today we will be focusing on one aspect of generative art: using computers to visualize systems of rules applied over and over again. I want to plug a paper here:</p>
+<p>&quot;The Unreasonable Effectiveness of Mathematics in the Physical Sciences.&quot; - Eugine Wigner.</p>
+<p>For some reason the following is true about the universe: it obeys rules which can be expressed mathematically. Physics, if you think about it, is just the process of identifying those rules so that we can ask: if the universe is in one state at time t, what state will it be in a little bit later, at time t+dt. The shocking thing is that we can find such rules and that they are simple!</p>
+<div class="figure">
+<img src="https://vincenttoups.github.io/ux-iron-yard/jupiter-approach.gif" alt="Jupiter" />
+<p class="caption">Jupiter</p>
+</div>
+<p>(The standard model of particle physics, for instance, is just about a page and half of equations, but it predicts essentially everything predictable about the time-evolution of physical systems.) All the beauty and strangeness of life comes from these simple rules.</p>
+<h1 id="a-model-of-a-model">A Model of A Model</h1>
+<p>Still, a half a page of equations expressed in terms of not-so-elementary mathematics is not the best place to start. So we will be experimenting today with a much simpler system which, nevertheless, demonstrates a lot of the character of the universe: from simple rules complex behavior arises.</p>
+<p>Here is today's goal: <a href="https://vincenttoups.github.io/ux-iron-yard/">Nothing We Haven't Seen Before</a>.</p>
+<p>Believe it or not, this piece is based on a very simple idea:</p>
+<p>We have a universe which is just a list of values, &quot;on&quot; or &quot;off&quot; (we will represent these with 0, 1)</p>
+<p>Universe: &quot;001001010010011101011&quot;</p>
+<p>We want to define a rule which &quot;updates&quot; the universe. We'll do this by sliding along the universe and updating each cell one at a time based on the values currently in that cell and its two neighbors. For each such triplet of values, we need to define a final value (there are only two to choose from).</p>
+<p>Here is a set of rules:</p>
+<p>000 -&gt; 1 100 -&gt; 1 110 -&gt; 0 111 -&gt; 0 101 -&gt; 1 011 -&gt; 0 001 -&gt; 0</p>
+<p>On boundaries we will wrap around the universe. So the first triple for the above universe would be 100, so the new state would be 1.</p>
+<p>Thems the ideas! No to implementation!</p>
+<h1 id="the-html-page">The HTML Page!</h1>
+<p>We'll be using a <em>canvas</em> element to draw our artwork. A canvas is just a special HTML element which we can draw whatever we want inside.</p>
+<p>Our HTML should look like this:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;meta charset=&quot;utf-8&quot;&gt;
+        &lt;title&gt;Nothing We Haven&#39;t Seen Before&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;style.css&quot;&gt;
+    &lt;script src=&quot;./tinycolor-min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;./utilities.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;./experiment-2.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;./make-things-go.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+      &lt;canvas id=&quot;main-canvas&quot;&gt;&lt;/canvas&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>(this is in the file <code>index.html</code>)</p>
+<p>The body:</p>
+<pre><code>    &lt;body&gt;
+      &lt;canvas id=&quot;main-canvas&quot;&gt;&lt;/canvas&gt;
+    &lt;/body&gt;</code></pre>
+<p>Just contains one element: a canvas. We want that canvas to occupy the entire browser pane, so we use css to make that happen:</p>
+<pre><code>html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0px;
+}</code></pre>
+<p>Now if we open up this file, we'll get a blank page.</p>
+<h1 id="making-things-go">Making things go:</h1>
+<p>Don't worry too much about these details. When you work on generative art you want to focus on the creative process, and let the technical details just sort of hang out with you. But here is how everything is going to go:</p>
+<pre><code>document.addEventListener(&quot;DOMContentLoaded&quot;,function(){
+    var canvas = document.querySelector(&quot;#main-canvas&quot;);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var width = canvas.width;
+    var height = canvas.height;
+    var context = canvas.getContext(&#39;2d&#39;);
+    if(window.init){
+    window.init(context, width, height);
+    }
+    function loop(){
+    if(window.drawFrame){
+        window.drawFrame(context, width, height);
+    }
+    requestAnimationFrame(loop);
+    }
+    loop();
+});</code></pre>
+<p>The basic idea here is simple: tell the browser to execute some code after the HTML page is loaded. That code grabs the canvas, sets is width and height (for drawing) so that it matches its dimensions, then checks whether the window object has an <code>init</code> and <code>drawFrame</code> method. It calls the <code>init</code> once, then asks the browser to call <code>loop</code> every time the browser wants to update. <code>loop</code>, in turn, calls <code>drawFrame</code>.</p>
+<h1 id="the-big-picture">The Big Picture</h1>
+<p>Here is what we are going to do, in words: create a &quot;world&quot; of cells, either zero or one, initialized randomly. We want the world to have the same number of cells as the width of the image. We will then update the world repeatedly according to the rules and draw the world line by line, down the page. When we reach the bottom, we will start drawing again at the top of the page, forever.</p>
+<p>Because this gets boring, we will, from time to time, randomly modify the rules and the points.</p>
+<h1 id="init-and-drawframe"><code>init</code> and <code>drawFrame</code></h1>
+<p>These are defined in <code>experiment-0.js</code>:</p>
+<pre><code>(function(){
+var points = undefined;
+var previousPoints = undefined;
+var currentRow = 0;
+var rules = {
+    &#39;111&#39;:0,
+    &#39;110&#39;:1,
+    &#39;101&#39;:1,
+    &#39;100&#39;:0,
+    &#39;011&#39;:1,
+    &#39;010&#39;:1,
+    &#39;001&#39;:1,
+    &#39;000&#39;:0
+};
+
+function mutateRules(rules){
+    var keys = Object.keys(rules);
+    var output = {};
+    keys.forEach(function(k){
+    output[k] = rules[k];
+    });
+    var twiddle = selectOne(keys);
+    output[twiddle] = rules[twiddle] === 1 ? 0 : 1;
+    return output;
+}
+
+function mutatePoints(points){
+    var out = [];
+    for(var i = 0; i &lt; points.length; i++){
+    if(Math.random()&lt;0.1){
+        out[i] = points[i] === 0 ? 1 : 0;
+    } else {
+        out[i] = points[i];
+    }
+    }
+    return out;
+}
+
+function previousConfig(array,i){
+    var iprev = (i-1 + array.length) % array.length;
+    var inext = (i+1 + array.length) % array.length;
+    var config = [array[iprev],array[i],array[inext]].join(&#39;&#39;);
+    return config;
+}
+function drawRow(context,width,height,row,array){
+    row = row % height;
+    for(var i = 0; i &lt; array.length; i ++){
+    context.fillStyle = array[i] === 0 ? &quot;black&quot; : &quot;white&quot;;
+    context.fillRect(i,row,1,1);
+    }
+}
+function calculateNewState(oldstate, rules){
+    var newstate = new Array(oldstate.length);
+    for(var i = 0; i &lt; oldstate.length; i ++){
+    newstate[i] = rules[previousConfig(oldstate,i)];
+    }
+    return newstate;
+}
+window.init = function(context, width, height){
+    points = new Array(width);
+    for(var i = 0; i &lt; width;i = i + 1){
+    points[i] = Math.random()&lt;0.5 ? 1 : 0;
+    };
+};    
+window.drawFrame = function(context,width,height){
+    drawRow(context,width,height,currentRow,points);
+    points = calculateNewState(points,rules);
+    if(Math.random()&lt;0.1) rules = mutateRules(rules);
+    if(Math.random()&lt;0.1) points = mutatePoints(points);
+    currentRow = currentRow + 1;    
+};
+})</code></pre>
+<h1 id="understanding-unfamiliar-code">Understanding Unfamiliar Code</h1>
+<ol style="list-style-type: decimal">
+<li>Always start with the &quot;entry point&quot; and go out from there.</li>
+<li>Remember that Javascript just evaluates code step by step: there is never any mystery if you know the rules.</li>
+<li>Use your browser's debugger!</li>
+</ol>
+<h1 id="entry">Entry:</h1>
+<pre><code>window.drawFrame = function(context,width,height){
+    drawRow(context,width,height,currentRow,points);
+    points = calculateNewState(points,rules);
+    if(Math.random()&lt;0.1) rules = mutateRules(rules);
+    if(Math.random()&lt;0.1) points = mutatePoints(points);
+    currentRow = currentRow + 1;    
+};</code></pre>
+<p>Just five lines! The first draws the row, apparently using the arguments to <code>drawFrame</code> and the variables <code>currentRow</code> and <code>points</code>.</p>
+<p>Now we spiral out. First of all, what are <code>currentRow</code> and <code>points</code>?</p>
+<p>They are defined up here:</p>
+<pre><code>var points = undefined;
+var previousPoints = undefined;
+var currentRow = 0;
+var rules = {
+    &#39;111&#39;:0,
+    &#39;110&#39;:1,
+    &#39;101&#39;:1,
+    &#39;100&#39;:0,
+    &#39;011&#39;:1,
+    &#39;010&#39;:1,
+    &#39;001&#39;:1,
+    &#39;000&#39;:0
+};</code></pre>
+<p>And initialized in <code>init</code>:</p>
+<pre><code>window.init = function(context, width, height){
+  points = new Array(width);
+  for(var i = 0; i &lt; width;i = i + 1){
+    points[i] = Math.random()&lt;0.5 ? 1 : 0;
+  };
+};</code></pre>
+<p>Finally, we draw the row:</p>
+<pre><code>function drawRow(context,width,height,row,array){
+    row = row % height;
+    for(var i = 0; i &lt; array.length; i ++){
+      context.fillStyle = array[i] === 0 ? &quot;black&quot; : &quot;white&quot;;
+      context.fillRect(i,row,1,1);
+    }
+}</code></pre>
+<p>In words, we calculate the row to draw our points on, and then draw them as a series of 1x1 rectangles, using for loop.</p>
+<h1 id="on-graphics-contexts">On Graphics Contexts:</h1>
+<p>This <code>context</code> we are getting, initialized in <code>make-things-go.js</code> is an object provided by the web browser which exposes methods we can use to draw things onto the canvas. We use two aspects of the context above, <code>fillStyle</code>, and <code>fillRect</code>. Note well that <code>fillStyle</code> is a <em>value</em> containing the color we want to draw while <code>fillRect</code> is a method which fills a rectangle on the canvas.</p>
+<p>You can find all the documentation on graphics contexts at the Mozzila Developer's Network page <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D">here</a>.</p>
+<h1 id="updating-our-system">Updating our system:</h1>
+<pre><code>    points = calculateNewState(points,rules);
+    </code></pre>
+<p><code>calculateNewState</code> looks like:</p>
+<pre><code>function calculateNewState(oldstate, rules){
+    var newstate = new Array(oldstate.length);
+    for(var i = 0; i &lt; oldstate.length; i ++){
+    newstate[i] = rules[previousConfig(oldstate,i)];
+    }
+    return newstate;
+}</code></pre>
+<p>And the only complicated thing about this is <code>previousConfig</code>, a function which takes an index into the array and returns a string representing the previous, three-cell configuration needed to update that cell.</p>
+<pre><code>function previousConfig(array,i){
+    var iprev = (i-1 + array.length) % array.length;
+    var inext = (i+1 + array.length) % array.length;
+    var config = [array[iprev],array[i],array[inext]].join(&#39;&#39;);
+    return config;
+}</code></pre>
+<h1 id="aesthetics">Aesthetics!</h1>
+<p>We are just drawing cells as either black or white depending on whether the cell is 0, or 1. But we can now experiment with different drawing strategies to see whether we get anything interesting.</p>
+<p>I'd like to live-code some of this at this point, take suggestions from the class, etc.</p>
