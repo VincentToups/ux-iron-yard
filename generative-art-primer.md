@@ -31,6 +31,8 @@ will be experimenting today with a much simpler system which,
 nevertheless, demonstrates a lot of the character of the universe:
 from simple rules complex behavior arises.
 
+![CA](https://vincenttoups.github.io/ux-iron-yard/ElementaryCARule030_700.gif)
+
 Here is today's goal:
 [Nothing We Haven't Seen Before](https://vincenttoups.github.io/ux-iron-yard/).
 

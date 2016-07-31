@@ -1,3 +1,14 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="markdown6.css" type="text/css" />
+</head>
+<body>
 <h1 id="lesson-1---1d-cellular-automata">Lesson 1 - 1D Cellular Automata</h1>
 <p>Today we will be focusing on one aspect of generative art: using computers to visualize systems of rules applied over and over again. I want to plug a paper here:</p>
 <p>&quot;The Unreasonable Effectiveness of Mathematics in the Physical Sciences.&quot; - Eugine Wigner.</p>
@@ -9,6 +20,10 @@
 <p>(The standard model of particle physics, for instance, is just about a page and half of equations, but it predicts essentially everything predictable about the time-evolution of physical systems.) All the beauty and strangeness of life comes from these simple rules.</p>
 <h1 id="a-model-of-a-model">A Model of A Model</h1>
 <p>Still, a half a page of equations expressed in terms of not-so-elementary mathematics is not the best place to start. So we will be experimenting today with a much simpler system which, nevertheless, demonstrates a lot of the character of the universe: from simple rules complex behavior arises.</p>
+<div class="figure">
+<img src="https://vincenttoups.github.io/ux-iron-yard/ElementaryCARule030_700.gif" alt="CA" />
+<p class="caption">CA</p>
+</div>
 <p>Here is today's goal: <a href="https://vincenttoups.github.io/ux-iron-yard/">Nothing We Haven't Seen Before</a>.</p>
 <p>Believe it or not, this piece is based on a very simple idea:</p>
 <p>We have a universe which is just a list of values, &quot;on&quot; or &quot;off&quot; (we will represent these with 0, 1)</p>
@@ -216,3 +231,5 @@ var rules = {
 <h1 id="aesthetics">Aesthetics!</h1>
 <p>We are just drawing cells as either black or white depending on whether the cell is 0, or 1. But we can now experiment with different drawing strategies to see whether we get anything interesting.</p>
 <p>I'd like to live-code some of this at this point, take suggestions from the class, etc.</p>
+</body>
+</html>
