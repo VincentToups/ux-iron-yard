@@ -15,6 +15,8 @@ can ask: if the universe is in one state at time t, what state will it
 be in a little bit later, at time t+dt. The shocking thing is that we
 can find such rules and that they are simple!
 
+![Jupiter](https://vincenttoups.github.io/ux-iron-yard/jupiter-approach.gif)
+
 (The standard model of particle physics, for instance, is just about a
 page and half of equations, but it predicts essentially everything
 predictable about the time-evolution of physical systems.) All the
