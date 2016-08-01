@@ -15,11 +15,10 @@ Consider nature, for instance:
 ![The Wave](https://vincenttoups.github.io/ux-iron-yard/the-wave.jpg)
 
 What we find so striking about these sorts of natural displays is at
-least in part an appreciation that they represent the repeated
-application of cyclical forces (in the above case, evaporation and
-replenishment of water, probably) over very long times to produce. The
-rock has become an intricate record cycles of water and wind in the
-area.
+least in part that they represent the repeated application of cyclical
+forces (in the above case, evaporation and replenishment of water,
+probably) over very long times to produce. The rock has become an
+intricate record of cycles of water and wind in the area.
 
 Computers allow us to simulate such cycles and systems at great speed,
 and if we connect those simulations to visualizations of some kind, we
