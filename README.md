@@ -1,6 +1,11 @@
 Generative Art Starter Pack
 ===========================
 
+(Useful links:
+* [Javascript Primer Notes](https://vincenttoups.github.io/ux-iron-yard/js-primer.html)
+* [Generative Art Primer Notes](https://vincenttoups.github.io/ux-iron-yard/generative-art-primer.html)
+)
+
 Hello World! Generative Art can mean a lot of things, but today, for
 us, it means using computers to help use explore the aesthetics of
 systems! What the heck does that mean? 
